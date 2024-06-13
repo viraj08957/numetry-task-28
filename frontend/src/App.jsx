@@ -1,11 +1,11 @@
 // eslint-disable-next-line no-unused-vars
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Register from "./Register";
-import Login from "./Login";
-import UserDashboard from "./UserDashboard";
-import AdminDashboard from "./AdminDashboard";
-import BookForm from "./submitBook";
+import Register from "./Pages/Register";
+import Login from "./Pages/Login";
+import UserDashboard from "./User/UserDashboard";
+import AdminDashboard from "./Admin/AdminDashboard";
+import BookForm from "./Admin/submitBook";
 
 function App() {
   return (

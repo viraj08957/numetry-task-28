@@ -137,7 +137,6 @@ app.delete("/remove-user/:userId", async (req, res) => {
 });
 
 const bookSchema = new mongoose.Schema({
-  id: { type: String, required: true },
   title: { type: String, required: true },
   total_count: { type: Number, required: true },
   publishing_date: { type: Date, required: true },
@@ -172,10 +171,44 @@ app.get("/api/publishers", async (req, res) => {
 });
 
 app.post("/api/publishers", async (req, res) => {
-  const newPublisher = new Publisher(req.body);
+  const { publisher_name, author_name, books } = req.body;
+
   try {
-    const savedPublisher = await newPublisher.save();
-    res.status(201).json(savedPublisher);
+    let publisher = await Publisher.findOne({ publisher_name });
+
+    if (publisher) {
+      let author = publisher.authors.find(
+        (author) => author.author_name === author_name
+      );
+
+      if (author) {
+        books.forEach((newBook) => {
+          let book = author.books.find((book) => book.title === newBook.title);
+
+          if (book) {
+            book.total_count = newBook.total_count;
+            book.publishing_date = newBook.publishing_date;
+            book.price = newBook.price;
+            book.img_url = newBook.img_url;
+          } else {
+            author.books.push(newBook);
+          }
+        });
+      } else {
+        publisher.authors.push({ author_name, books });
+      }
+
+      const updatedPublisher = await publisher.save();
+      res.status(200).json(updatedPublisher);
+    } else {
+      const newPublisher = new Publisher({
+        publisher_name,
+        authors: [{ author_name, books }],
+      });
+
+      const savedPublisher = await newPublisher.save();
+      res.status(201).json(savedPublisher);
+    }
   } catch (err) {
     console.error(err);
     res.status(400).send({ message: "Please provide valid data" });

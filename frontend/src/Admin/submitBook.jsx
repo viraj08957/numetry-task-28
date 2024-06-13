@@ -7,7 +7,6 @@ function BookForm() {
   const [formData, setFormData] = useState({
     publisher_name: "",
     author_name: "",
-    id: "",
     title: "",
     total_count: "",
     publishing_date: "",
@@ -25,19 +24,14 @@ function BookForm() {
     try {
       await axios.post("http://localhost:5000/api/publishers", {
         publisher_name: formData.publisher_name,
-        authors: [
+        author_name: formData.author_name,
+        books: [
           {
-            author_name: formData.author_name,
-            books: [
-              {
-                id: formData.id,
-                title: formData.title,
-                total_count: parseInt(formData.total_count),
-                publishing_date: formData.publishing_date,
-                price: parseFloat(formData.price),
-                img_url: formData.img_url,
-              },
-            ],
+            title: formData.title,
+            total_count: parseInt(formData.total_count),
+            publishing_date: formData.publishing_date,
+            price: parseInt(formData.price),
+            img_url: formData.img_url,
           },
         ],
       });
@@ -89,18 +83,6 @@ function BookForm() {
             type="text"
             name="author_name"
             value={formData.author_name}
-            onChange={handleChange}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Book id :</label>
-          <input
-            type="number"
-            name="id"
-            value={formData.id}
             onChange={handleChange}
             className="mt-1 p-2 border border-gray-300 rounded-md w-full"
             required

@@ -69,7 +69,7 @@ function Login() {
           Login
         </button>
         <p className="mt-4 text-center text-gray-600">
-          Don't have an account?{" "}
+          Dont have an account?{" "}
           <span
             className="text-blue-500 cursor-pointer"
             onClick={() => navigate("/register")}
