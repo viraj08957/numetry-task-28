@@ -215,6 +215,23 @@ app.post("/api/publishers", async (req, res) => {
   }
 });
 
+app.get("/api/books",async (req,res)=>{
+  try{
+    const publisher = await Publisher.find();
+    const books = [];
+    publisher.forEach(publisher=>{
+      publisher.authors.forEach(author=>{
+        books.push(...author.books);
+      });
+    });
+    res.json(books)
+  }catch(err)
+  {
+    console.error(err);
+    res.status(500).send({message:"error retrieving books"})
+  }
+})
+
 app.listen(port, () => {
   console.log(`The server is running on port ${port}`);
 });
