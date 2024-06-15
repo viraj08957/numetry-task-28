@@ -1,9 +1,11 @@
 /* eslint-disable no-unused-vars */
+// BooksCard.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const BooksCard = () => {
   const [books, setBooks] = useState([]);
+  const [author, setAuthor] = useState([]);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -25,7 +27,7 @@ const BooksCard = () => {
         {books.map((book, index) => (
           <div
             key={index}
-            className="bg-white shadow-md rounded-lg overflow-hidden"
+            className="bg-white rounded-lg shadow-md overflow-hidden"
           >
             <img
               className="w-full h-48 object-cover"
@@ -33,13 +35,15 @@ const BooksCard = () => {
               alt={book.title}
             />
             <div className="p-4">
-              <h2 className="text-xl font-semibold">{book.title}</h2>
+              <h2 className="text-xl font-semibold mb-2">{book.title}</h2>
+              <p className="text-gray-600">Author: {book.author_name}</p>
+              <p className="text-gray-600">Publisher: {book.publisher_name}</p>
               <p className="text-gray-600">
-                Published on:{" "}
+                Published Date:{" "}
                 {new Date(book.publishing_date).toLocaleDateString()}
               </p>
-              <p className="text-gray-600">Price: ₹{book.price}</p>
               <p className="text-gray-600">Total Count: {book.total_count}</p>
+              <p className="text-gray-600">Price: ₹{book.price}</p>
             </div>
           </div>
         ))}

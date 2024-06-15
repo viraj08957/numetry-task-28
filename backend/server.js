@@ -156,81 +156,94 @@ const publisherSchema = new mongoose.Schema({
 
 const Publisher = mongoose.model("Publisher", publisherSchema);
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the root route");
-});
-
-app.get("/api/publishers", async (req, res) => {
-  try {
-    const publishers = await Publisher.find();
-    res.json(publishers);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ message: "Error retrieving publishers" });
-  }
-});
-
-app.post("/api/publishers", async (req, res) => {
-  const { publisher_name, author_name, books } = req.body;
+app.put("/api/books/:bookId", async (req, res) => {
+  const bookId = req.params.bookId;
+  const {
+    title,
+    total_count,
+    publishing_date,
+    price,
+    img_url,
+    author_name,
+    publisher_name,
+  } = req.body;
 
   try {
     let publisher = await Publisher.findOne({ publisher_name });
 
-    if (publisher) {
-      let author = publisher.authors.find(
-        (author) => author.author_name === author_name
-      );
-
-      if (author) {
-        books.forEach((newBook) => {
-          let book = author.books.find((book) => book.title === newBook.title);
-
-          if (book) {
-            book.total_count = newBook.total_count;
-            book.publishing_date = newBook.publishing_date;
-            book.price = newBook.price;
-            book.img_url = newBook.img_url;
-          } else {
-            author.books.push(newBook);
-          }
-        });
-      } else {
-        publisher.authors.push({ author_name, books });
-      }
-
-      const updatedPublisher = await publisher.save();
-      res.status(200).json(updatedPublisher);
-    } else {
-      const newPublisher = new Publisher({
-        publisher_name,
-        authors: [{ author_name, books }],
-      });
-
-      const savedPublisher = await newPublisher.save();
-      res.status(201).json(savedPublisher);
+    if (!publisher) {
+      publisher = new Publisher({ publisher_name, authors: [] });
     }
-  } catch (err) {
-    console.error(err);
-    res.status(400).send({ message: "Please provide valid data" });
+
+    let author = publisher.authors.find((a) => a.author_name === author_name);
+
+    if (!author) {
+      author = { author_name, books: [] };
+      publisher.authors.push(author);
+    }
+
+    let book = author.books.find((b) => b._id.equals(bookId));
+
+    if (!book) {
+      return res.status(404).send({ message: "Book not found" });
+    }
+
+    if (title) book.title = title;
+    if (total_count) book.total_count = total_count;
+    if (publishing_date) book.publishing_date = publishing_date;
+    if (price) book.price = price;
+    if (img_url) book.img_url = img_url;
+
+    await publisher.save();
+
+    res.send({ message: "Book updated successfully" });
+  } catch (error) {
+    console.error("Error updating book:", error);
+    if (error.name === "ValidationError") {
+      return res
+        .status(400)
+        .send({ message: "Validation error", error: error.message });
+    }
+    res.status(500).send({ message: "Error updating book" });
   }
 });
 
-app.get("/api/books",async (req,res)=>{
-  try{
-    const publisher = await Publisher.find();
-    const books = [];
-    publisher.forEach(publisher=>{
-      publisher.authors.forEach(author=>{
-        books.push(...author.books);
-      });
+
+app.delete("/api/books/:bookId", async (req, res) => {
+  const bookId = req.params.bookId;
+
+  try {
+    let publisher = await Publisher.findOne({ "authors.books._id": bookId });
+
+    if (!publisher) {
+      return res.status(404).send({ message: "Publisher not found" });
+    }
+
+
+    let author;
+    let book;
+    publisher.authors.forEach((a) => {
+      book = a.books.find((b) => b._id.equals(bookId));
+      if (book) {
+        author = a;
+      }
     });
-    res.json(books)
-  }catch(err)
-  {
-    console.error(err);
-    res.status(500).send({message:"error retrieving books"})
+
+    if (!book) {
+      return res.status(404).send({ message: "Book not found" });
+    }
+
+
+    author.books.pull(book);
+    await publisher.save();
+
+    res.send({ message: "Book deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting book:", error);
+    res.status(500).send({ message: "Error deleting book" });
   }
-})
+});
+
 
 app.listen(port, () => {
   console.log(`The server is running on port ${port}`);

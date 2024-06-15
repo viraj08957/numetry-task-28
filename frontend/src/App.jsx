@@ -6,6 +6,8 @@ import Login from "./Pages/Login";
 import UserDashboard from "./User/UserDashboard";
 import AdminDashboard from "./Admin/AdminDashboard";
 import BookForm from "./Admin/submitBook";
+import ViewBooks from "./Admin/ViewBooks";
+import BookUpdateForm from "./Admin/BookUpdateForm";
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
         <Route path="/user-dashboard" element={<UserDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/add-book" element={<BookForm />} />
+        <Route path="/view-books" element={<ViewBooks />} />
+        <Route path="/update-book" element={<BookUpdateForm />} />
       </Routes>
     </Router>
   );

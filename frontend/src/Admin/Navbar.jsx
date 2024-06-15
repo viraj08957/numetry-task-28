@@ -17,6 +17,13 @@ function Navbar({ onLogout }) {
           <div>
             <button
               className="mx-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow"
+              onClick={() => navigate("/view-books")}
+            >
+              View Books
+            </button>
+
+            <button
+              className="mx-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow"
               onClick={() => navigate("/add-book")}
             >
               Upload Book
