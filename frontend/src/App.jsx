@@ -5,9 +5,9 @@ import Register from "./Pages/Register";
 import Login from "./Pages/Login";
 import UserDashboard from "./User/UserDashboard";
 import AdminDashboard from "./Admin/AdminDashboard";
-import BookForm from "./Admin/submitBook";
-import ViewBooks from "./Admin/ViewBooks";
-import BookUpdateForm from "./Admin/BookUpdateForm";
+import BookList from "./User/BookList";
+import BooksTable from "./Admin/BookTable";
+import BookUpload from "./Admin/UploadBook";
 
 function App() {
   return (
@@ -18,9 +18,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/user-dashboard" element={<UserDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/add-book" element={<BookForm />} />
-        <Route path="/view-books" element={<ViewBooks />} />
-        <Route path="/update-book" element={<BookUpdateForm />} />
+        <Route path="/view-books" element={<BookList />} />
+        <Route path="/booklist" element={<BooksTable />} />
+        <Route path="/upload-book" element={<BookUpload />} />
       </Routes>
     </Router>
   );

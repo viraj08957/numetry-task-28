@@ -9,8 +9,10 @@ const bcrypt = require("bcrypt");
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
 const port = 5000;
 const url = process.env.URL;
+
 mongoose
   .connect(url, {
     useNewUrlParser: true,
@@ -19,6 +21,7 @@ mongoose
   .then(() => console.log("MongoDB connected successfully"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
+// Define all schemas
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   phone: { type: String, required: true },
@@ -34,8 +37,43 @@ const UserSchema = new mongoose.Schema({
   ],
 });
 
-const User = mongoose.model("User", UserSchema);
+const AuthorSchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  books: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
+});
 
+const PublisherSchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  books: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
+});
+
+const BookSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Author",
+    required: true,
+  },
+  publisher: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Publisher",
+    required: true,
+  },
+  totalCounts: { type: Number, required: true },
+  publishingDate: { type: Date, required: true },
+  price: { type: Number, required: true },
+  imageUrl: { type: String, required: true },
+});
+
+// Create models
+const User = mongoose.model("User", UserSchema);
+const Author = mongoose.model("Author", AuthorSchema);
+const Publisher = mongoose.model("Publisher", PublisherSchema);
+const Book = mongoose.model("Book", BookSchema);
+
+// REST API Endpoints
+
+// Register endpoint
 app.post("/register", async (req, res) => {
   const { name, phone, email, username, password } = req.body;
   try {
@@ -60,6 +98,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
+// Login endpoint
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -83,6 +122,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// Logout endpoint
 app.post("/logout", async (req, res) => {
   const { email, loginIndex } = req.body;
   try {
@@ -100,6 +140,7 @@ app.post("/logout", async (req, res) => {
   }
 });
 
+// Retrieve user logs endpoint
 app.get("/user-logs", async (req, res) => {
   try {
     const users = await User.find({ userType: "user" }, "name email logins");
@@ -110,6 +151,7 @@ app.get("/user-logs", async (req, res) => {
   }
 });
 
+// Update user endpoint
 app.put("/update-user/:userId", async (req, res) => {
   const userId = req.params.userId;
   const updatedUserData = req.body;
@@ -125,6 +167,7 @@ app.put("/update-user/:userId", async (req, res) => {
   }
 });
 
+// Delete user endpoint
 app.delete("/remove-user/:userId", async (req, res) => {
   const userId = req.params.userId;
   try {
@@ -136,114 +179,140 @@ app.delete("/remove-user/:userId", async (req, res) => {
   }
 });
 
-const bookSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  total_count: { type: Number, required: true },
-  publishing_date: { type: Date, required: true },
-  price: { type: Number, required: true },
-  img_url: { type: String, required: true },
-});
-
-const authorSchema = new mongoose.Schema({
-  author_name: { type: String, required: true },
-  books: [bookSchema],
-});
-
-const publisherSchema = new mongoose.Schema({
-  publisher_name: { type: String, required: true },
-  authors: [authorSchema],
-});
-
-const Publisher = mongoose.model("Publisher", publisherSchema);
-
-app.put("/api/books/:bookId", async (req, res) => {
-  const bookId = req.params.bookId;
+// Add book endpoint
+app.post("/add-book", async (req, res) => {
   const {
     title,
-    total_count,
-    publishing_date,
+    authorName,
+    publisherName,
+    totalCounts,
+    publishingDate,
     price,
-    img_url,
-    author_name,
-    publisher_name,
+    imageUrl,
   } = req.body;
 
+  if (
+    !title ||
+    !authorName ||
+    !publisherName ||
+    totalCounts == null ||
+    !publishingDate ||
+    price == null ||
+    !imageUrl
+  ) {
+    return res.status(400).send({ message: "All fields are required" });
+  }
+
   try {
-    let publisher = await Publisher.findOne({ publisher_name });
-
-    if (!publisher) {
-      publisher = new Publisher({ publisher_name, authors: [] });
-    }
-
-    let author = publisher.authors.find((a) => a.author_name === author_name);
+    let author = await Author.findOne({ name: authorName });
+    let publisher = await Publisher.findOne({ name: publisherName });
 
     if (!author) {
-      author = { author_name, books: [] };
-      publisher.authors.push(author);
+      author = new Author({ name: authorName });
+      await author.save();
     }
-
-    let book = author.books.find((b) => b._id.equals(bookId));
-
-    if (!book) {
-      return res.status(404).send({ message: "Book not found" });
-    }
-
-    if (title) book.title = title;
-    if (total_count) book.total_count = total_count;
-    if (publishing_date) book.publishing_date = publishing_date;
-    if (price) book.price = price;
-    if (img_url) book.img_url = img_url;
-
-    await publisher.save();
-
-    res.send({ message: "Book updated successfully" });
-  } catch (error) {
-    console.error("Error updating book:", error);
-    if (error.name === "ValidationError") {
-      return res
-        .status(400)
-        .send({ message: "Validation error", error: error.message });
-    }
-    res.status(500).send({ message: "Error updating book" });
-  }
-});
-
-
-app.delete("/api/books/:bookId", async (req, res) => {
-  const bookId = req.params.bookId;
-
-  try {
-    let publisher = await Publisher.findOne({ "authors.books._id": bookId });
 
     if (!publisher) {
-      return res.status(404).send({ message: "Publisher not found" });
+      publisher = new Publisher({ name: publisherName });
+      await publisher.save();
     }
 
-
-    let author;
-    let book;
-    publisher.authors.forEach((a) => {
-      book = a.books.find((b) => b._id.equals(bookId));
-      if (book) {
-        author = a;
-      }
+    const book = new Book({
+      title,
+      author: author._id,
+      publisher: publisher._id,
+      totalCounts,
+      publishingDate,
+      price,
+      imageUrl,
     });
 
-    if (!book) {
-      return res.status(404).send({ message: "Book not found" });
-    }
+    await book.save();
 
+    author.books.push(book._id);
+    await author.save();
 
-    author.books.pull(book);
+    publisher.books.push(book._id);
     await publisher.save();
 
-    res.send({ message: "Book deleted successfully" });
+    res.status(201).send({ message: "Book added successfully", book });
   } catch (error) {
-    console.error("Error deleting book:", error);
-    res.status(500).send({ message: "Error deleting book" });
+    console.error("Error adding book:", error);
+    res.status(500).send({ message: "Error adding book" });
   }
 });
 
+app.post("/upload-book", async (req, res) => {
+  const {
+    title,
+    authorName,
+    publisherName,
+    totalCounts,
+    publishingDate,
+    price,
+    imageUrl,
+  } = req.body;
+
+  if (
+    !title ||
+    !authorName ||
+    !publisherName ||
+    totalCounts == null ||
+    !publishingDate ||
+    price == null ||
+    !imageUrl
+  ) {
+    return res.status(400).send({ message: "All fields are required" });
+  }
+
+  try {
+    let author = await Author.findOne({ name: authorName });
+    let publisher = await Publisher.findOne({ name: publisherName });
+
+    if (!author) {
+      author = new Author({ name: authorName });
+      await author.save();
+    }
+
+    if (!publisher) {
+      publisher = new Publisher({ name: publisherName });
+      await publisher.save();
+    }
+
+    const book = new Book({
+      title,
+      author: author._id,
+      publisher: publisher._id,
+      totalCounts,
+      publishingDate,
+      price,
+      imageUrl,
+    });
+
+    await book.save();
+
+    author.books.push(book._id);
+    await author.save();
+
+    publisher.books.push(book._id);
+    await publisher.save();
+
+    res.status(201).send({ message: "Book added successfully", book });
+  } catch (error) {
+    console.error("Error adding book:", error);
+    res.status(500).send({ message: "Error adding book" });
+  }
+});
+
+app.get("/books", async (req, res) => {
+  try {
+    const books = await Book.find().populate("author publisher", "name");
+    res.send(books);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error retrieving books" });
+  }
+});
 
 app.listen(port, () => {
   console.log(`The server is running on port ${port}`);

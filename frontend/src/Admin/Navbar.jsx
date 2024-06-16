@@ -14,23 +14,22 @@ function Navbar({ onLogout }) {
           <div>
             <h1 className="text-2xl font-bold">Admin Dashboard</h1>
           </div>
-          <div>
+          <div className="flex items-center space-x-4">
             <button
-              className="mx-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow"
-              onClick={() => navigate("/view-books")}
+              onClick={() => navigate("/booklist")}
+              className="p-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg shadow-lg"
             >
               View Books
             </button>
-
             <button
-              className="mx-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow"
-              onClick={() => navigate("/add-book")}
+              onClick={() => navigate("/upload-book")}
+              className="p-3 bg-green-500 hover:bg-green-600 text-white rounded-lg shadow-lg"
             >
               Upload Book
             </button>
             <button
-              className="mx-2 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg shadow"
-              onClick={() => navigate("/login")}
+              onClick={onLogout}
+              className="p-3 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-lg"
             >
               Logout
             </button>
