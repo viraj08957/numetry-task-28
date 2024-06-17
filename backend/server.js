@@ -314,6 +314,74 @@ app.get("/books", async (req, res) => {
   }
 });
 
+app.put("/update-book/:bookId", async (req, res) => {
+  const bookId = req.params.bookId;
+  const updatedBookData = req.body;
+
+  try {
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).send({ message: "Book not found" });
+    }
+
+    if (updatedBookData.title) book.title = updatedBookData.title;
+    if (updatedBookData.authorName) {
+      let author = await Author.findOne({ name: updatedBookData.authorName });
+      if (!author) {
+        author = new Author({ name: updatedBookData.authorName });
+        await author.save();
+      }
+      book.author = author._id;
+    }
+    if (updatedBookData.publisherName) {
+      let publisher = await Publisher.findOne({
+        name: updatedBookData.publisherName,
+      });
+      if (!publisher) {
+        publisher = new Publisher({ name: updatedBookData.publisherName });
+        await publisher.save();
+      }
+      book.publisher = publisher._id;
+    }
+    if (updatedBookData.totalCounts != null)
+      book.totalCounts = updatedBookData.totalCounts;
+    if (updatedBookData.publishingDate)
+      book.publishingDate = new Date(updatedBookData.publishingDate);
+    if (updatedBookData.price != null) book.price = updatedBookData.price;
+    if (updatedBookData.imageUrl) book.imageUrl = updatedBookData.imageUrl;
+
+    await book.save();
+    res.send({ message: "Book updated successfully", book });
+  } catch (error) {
+    console.error("Error updating book:", error);
+    res.status(500).send({ message: "Error updating book" });
+  }
+});
+
+app.delete("/delete-book/:bookId", async (req, res) => {
+  const bookId = req.params.bookId;
+
+  try {
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).send({ message: "Book not found" });
+    }
+
+    await Author.updateOne({ _id: book.author }, { $pull: { books: bookId } });
+    await Publisher.updateOne(
+      { _id: book.publisher },
+      { $pull: { books: bookId } }
+    );
+
+    await Book.findByIdAndDelete(bookId);
+
+    res.send({ message: "Book deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting book:", error);
+    res.status(500).send({ message: "Error deleting book" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`The server is running on port ${port}`);
 });

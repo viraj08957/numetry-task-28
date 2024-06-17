@@ -27,7 +27,7 @@ const BooksTable = () => {
   };
 
   const handleEdit = (bookId) => {
-    navigate(`/edit-book/${bookId}`); // Adjust the route as needed
+    navigate(`/update-book/${bookId}`); // Adjust the route as needed
   };
 
   const handleDelete = async (bookId) => {
@@ -92,7 +92,7 @@ const BooksTable = () => {
                   <td className="border border-gray-300 p-3">
                     {new Date(book.publishingDate).toLocaleDateString()}
                   </td>
-                  <td className="border border-gray-300 p-3">${book.price}</td>
+                  <td className="border border-gray-300 p-3">₹{book.price}</td>
                   <td className="border border-gray-300 p-3">
                     <img
                       src={book.imageUrl}
