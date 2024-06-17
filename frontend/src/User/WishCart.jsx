@@ -5,6 +5,16 @@ import { Link } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 
 const WishCart = ({ cartItems, removeFromCart }) => {
+  const aggregatedBooks = cartItems.reduce((acc, book) => {
+    const existingBook = acc.find((item) => item._id === book._id);
+    if (existingBook) {
+      existingBook.quantity += 1;
+    } else {
+      acc.push({ ...book, quantity: 1 });
+    }
+    return acc;
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-6 relative">
       <div className="absolute top-8 right-8">
@@ -32,11 +42,11 @@ const WishCart = ({ cartItems, removeFromCart }) => {
 
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl mt-16">
         <h2 className="text-2xl font-bold mb-4">WishCart Items</h2>
-        {cartItems.length === 0 ? (
+        {aggregatedBooks.length === 0 ? (
           <p className="text-lg">No items in your WishCart.</p>
         ) : (
           <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {cartItems.map((book) => (
+            {aggregatedBooks.map((book) => (
               <li
                 key={book._id}
                 className="max-w-sm rounded overflow-hidden shadow-lg bg-white"
@@ -52,6 +62,9 @@ const WishCart = ({ cartItems, removeFromCart }) => {
                   </p>
                   <p className="text-sm mb-2">
                     <strong>Price:</strong> ₹{book.price}
+                  </p>
+                  <p className="text-sm mb-2">
+                    <strong>Quantity:</strong> {book.quantity}
                   </p>
                   <div className="flex justify-end">
                     <button

@@ -21,7 +21,6 @@ mongoose
   .then(() => console.log("MongoDB connected successfully"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
-// Define all schemas
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   phone: { type: String, required: true },
@@ -63,17 +62,14 @@ const BookSchema = new mongoose.Schema({
   publishingDate: { type: Date, required: true },
   price: { type: Number, required: true },
   imageUrl: { type: String, required: true },
+  description: { type: String, required: true },
 });
 
-// Create models
 const User = mongoose.model("User", UserSchema);
 const Author = mongoose.model("Author", AuthorSchema);
 const Publisher = mongoose.model("Publisher", PublisherSchema);
 const Book = mongoose.model("Book", BookSchema);
 
-// REST API Endpoints
-
-// Register endpoint
 app.post("/register", async (req, res) => {
   const { name, phone, email, username, password } = req.body;
   try {
@@ -98,7 +94,6 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// Login endpoint
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -122,7 +117,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Logout endpoint
 app.post("/logout", async (req, res) => {
   const { email, loginIndex } = req.body;
   try {
@@ -140,7 +134,6 @@ app.post("/logout", async (req, res) => {
   }
 });
 
-// Retrieve user logs endpoint
 app.get("/user-logs", async (req, res) => {
   try {
     const users = await User.find({ userType: "user" }, "name email logins");
@@ -151,7 +144,6 @@ app.get("/user-logs", async (req, res) => {
   }
 });
 
-// Update user endpoint
 app.put("/update-user/:userId", async (req, res) => {
   const userId = req.params.userId;
   const updatedUserData = req.body;
@@ -167,7 +159,6 @@ app.put("/update-user/:userId", async (req, res) => {
   }
 });
 
-// Delete user endpoint
 app.delete("/remove-user/:userId", async (req, res) => {
   const userId = req.params.userId;
   try {
@@ -179,7 +170,6 @@ app.delete("/remove-user/:userId", async (req, res) => {
   }
 });
 
-// Add book endpoint
 app.post("/add-book", async (req, res) => {
   const {
     title,
@@ -189,6 +179,7 @@ app.post("/add-book", async (req, res) => {
     publishingDate,
     price,
     imageUrl,
+    description,
   } = req.body;
 
   if (
@@ -198,7 +189,8 @@ app.post("/add-book", async (req, res) => {
     totalCounts == null ||
     !publishingDate ||
     price == null ||
-    !imageUrl
+    !imageUrl ||
+    !description
   ) {
     return res.status(400).send({ message: "All fields are required" });
   }
@@ -225,6 +217,7 @@ app.post("/add-book", async (req, res) => {
       publishingDate,
       price,
       imageUrl,
+      description,
     });
 
     await book.save();
@@ -251,6 +244,7 @@ app.post("/upload-book", async (req, res) => {
     publishingDate,
     price,
     imageUrl,
+    description,
   } = req.body;
 
   if (
@@ -260,7 +254,8 @@ app.post("/upload-book", async (req, res) => {
     totalCounts == null ||
     !publishingDate ||
     price == null ||
-    !imageUrl
+    !imageUrl ||
+    !description
   ) {
     return res.status(400).send({ message: "All fields are required" });
   }
@@ -287,6 +282,7 @@ app.post("/upload-book", async (req, res) => {
       publishingDate,
       price,
       imageUrl,
+      description,
     });
 
     await book.save();
@@ -349,6 +345,8 @@ app.put("/update-book/:bookId", async (req, res) => {
       book.publishingDate = new Date(updatedBookData.publishingDate);
     if (updatedBookData.price != null) book.price = updatedBookData.price;
     if (updatedBookData.imageUrl) book.imageUrl = updatedBookData.imageUrl;
+    if (updatedBookData.description)
+      book.description = updatedBookData.description;
 
     await book.save();
     res.send({ message: "Book updated successfully", book });
@@ -360,28 +358,22 @@ app.put("/update-book/:bookId", async (req, res) => {
 
 app.delete("/delete-book/:bookId", async (req, res) => {
   const bookId = req.params.bookId;
-
   try {
-    const book = await Book.findById(bookId);
+    const book = await Book.findByIdAndDelete(bookId);
     if (!book) {
       return res.status(404).send({ message: "Book not found" });
     }
 
-    await Author.updateOne({ _id: book.author }, { $pull: { books: bookId } });
-    await Publisher.updateOne(
-      { _id: book.publisher },
-      { $pull: { books: bookId } }
-    );
-
-    await Book.findByIdAndDelete(bookId);
+    await Author.updateMany({ books: bookId }, { $pull: { books: bookId } });
+    await Publisher.updateMany({ books: bookId }, { $pull: { books: bookId } });
 
     res.send({ message: "Book deleted successfully" });
   } catch (error) {
-    console.error("Error deleting book:", error);
+    console.error(error);
     res.status(500).send({ message: "Error deleting book" });
   }
 });
 
 app.listen(port, () => {
-  console.log(`The server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });

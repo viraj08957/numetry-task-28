@@ -12,6 +12,7 @@ function BookUpload() {
     publishingDate: "",
     price: "",
     imageUrl: "",
+    description: "",
   });
   const [message, setMessage] = useState("");
 
@@ -27,7 +28,7 @@ function BookUpload() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:5000/upload-book",
+        "http://localhost:5000/add-book",
         formData
       );
       if (response.status === 201) {
@@ -40,6 +41,7 @@ function BookUpload() {
           publishingDate: "",
           price: "",
           imageUrl: "",
+          description: "",
         });
       } else {
         setMessage("Error adding book");
@@ -69,6 +71,7 @@ function BookUpload() {
               },
               { label: "Price", name: "price", type: "number", step: "0.01" },
               { label: "Image URL", name: "imageUrl", type: "text" },
+              { label: "Description", name: "description", type: "text" },
             ].map((input, index) => (
               <div key={index} className="mb-4">
                 <label className="block text-gray-700 font-medium mb-2">

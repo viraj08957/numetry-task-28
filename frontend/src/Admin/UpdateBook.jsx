@@ -14,6 +14,7 @@ const UpdateBook = () => {
     publishingDate: "",
     price: "",
     imageUrl: "",
+    description: "",
   });
   const [message, setMessage] = useState("");
 
@@ -32,6 +33,7 @@ const UpdateBook = () => {
           publishingDate: response.data.publishingDate.split("T")[0],
           price: response.data.price,
           imageUrl: response.data.imageUrl,
+          description: response.data.description,
         });
       } catch (error) {
         console.error("Error fetching book details:", error);
@@ -55,7 +57,7 @@ const UpdateBook = () => {
       );
       setMessage(response.data.message);
       setTimeout(() => {
-        navigate("/");
+        navigate(`/view-book/${bookId}`); // Navigate to view book page
       }, 2000);
     } catch (error) {
       console.error("Error updating book:", error);
@@ -159,11 +161,29 @@ const UpdateBook = () => {
               required
             />
           </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Description:
+            </label>
+            <textarea
+              name="description"
+              value={book.description}
+              onChange={handleChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              required
+            />
+          </div>
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
             Update Book
+          </button>
+          <button
+            onClick={() => navigate(`/booklist`)}
+            className="ml-2 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            View Book List
           </button>
         </form>
         {message && (

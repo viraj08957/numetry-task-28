@@ -1,9 +1,11 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import React from "react";
+import React, { useState } from "react";
 import { FaCartPlus } from "react-icons/fa";
 
 const BookCard = ({ book, onAddToCart }) => {
+  const [showDescription, setShowDescription] = useState(false);
+
   const handleAddToCartClick = () => {
     onAddToCart(book);
   };
@@ -13,7 +15,7 @@ const BookCard = ({ book, onAddToCart }) => {
   };
 
   const handleViewMoreClick = () => {
-    console.log(`Viewing more details of ${book.title}`);
+    setShowDescription(!showDescription);
   };
 
   return (
@@ -37,6 +39,11 @@ const BookCard = ({ book, onAddToCart }) => {
         <p className="text-sm mb-2">
           <strong>Price:</strong> ₹{book.price}
         </p>
+        {showDescription && (
+          <p className="text-sm mb-2">
+            <strong>Description:</strong> {book.description}
+          </p>
+        )}
         <div className="flex justify-between mt-4">
           <button
             onClick={handleAddToCartClick}
@@ -55,7 +62,7 @@ const BookCard = ({ book, onAddToCart }) => {
             onClick={handleViewMoreClick}
             className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
           >
-            View More
+            {showDescription ? "Hide Description" : "View More"}
           </button>
         </div>
       </div>
