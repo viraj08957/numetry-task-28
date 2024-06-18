@@ -7,13 +7,46 @@ import Navbar from "./Navbar";
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [message, setMessage] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(6);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserLogs = async () => {
       try {
         const response = await axios.get("http://localhost:5000/user-logs");
-        setUsers(response.data);
+        const groupedUsers = response.data.map((user) => {
+          const groupedLogins = user.logins.reduce((acc, login) => {
+            const dateKey = new Date(login.loginTime).toLocaleDateString();
+            if (!acc[dateKey]) {
+              acc[dateKey] = {
+                date: dateKey,
+                loginTime: new Date(login.loginTime),
+                logoutTime: login.logoutTime
+                  ? new Date(login.logoutTime)
+                  : null,
+              };
+            } else {
+              acc[dateKey].loginTime = new Date(
+                Math.min(acc[dateKey].loginTime, new Date(login.loginTime))
+              );
+              if (login.logoutTime) {
+                acc[dateKey].logoutTime = acc[dateKey].logoutTime
+                  ? new Date(
+                      Math.max(
+                        acc[dateKey].logoutTime,
+                        new Date(login.logoutTime)
+                      )
+                    )
+                  : new Date(login.logoutTime);
+              }
+            }
+            return acc;
+          }, {});
+          user.groupedLogins = Object.values(groupedLogins);
+          return user;
+        });
+        setUsers(groupedUsers);
       } catch (error) {
         console.error(error);
       }
@@ -44,7 +77,7 @@ function AdminDashboard() {
       await axios.delete(`http://localhost:5000/remove-user/${userId}`);
       const updatedUsers = users.map((user) => {
         if (user._id === userId) {
-          user.logins.pop();
+          user.groupedLogins.pop();
         }
         return user;
       });
@@ -53,6 +86,12 @@ function AdminDashboard() {
       console.error(error);
     }
   };
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div>
@@ -67,6 +106,7 @@ function AdminDashboard() {
                   <th className="border border-gray-300 p-3 text-left">
                     Email
                   </th>
+                  <th className="border border-gray-300 p-3 text-left">Date</th>
                   <th className="border border-gray-300 p-3 text-left">
                     Login Time
                   </th>
@@ -79,8 +119,8 @@ function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user, index) =>
-                  user.logins.map((login, i) => (
+                {currentUsers.map((user, index) =>
+                  user.groupedLogins.map((login, i) => (
                     <tr
                       key={`${index}-${i}`}
                       className={`bg-${
@@ -94,11 +134,20 @@ function AdminDashboard() {
                         {user.email}
                       </td>
                       <td className="border border-gray-300 p-3">
-                        {new Date(login.loginTime).toLocaleString()}
+                        {login.date}
+                      </td>
+                      <td className="border border-gray-300 p-3">
+                        {login.loginTime.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </td>
                       <td className="border border-gray-300 p-3">
                         {login.logoutTime
-                          ? new Date(login.logoutTime).toLocaleString()
+                          ? login.logoutTime.toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
                           : "N/A"}
                       </td>
                       <td className="border border-gray-300 p-3">
@@ -118,6 +167,23 @@ function AdminDashboard() {
           {message && (
             <p className="mt-4 text-center text-green-500">{message}</p>
           )}
+
+          <div className="flex justify-center mt-4">
+            <button
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <button
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r"
+              onClick={() => paginate(currentPage + 1)}
+              disabled={indexOfLastUser >= users.length}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>

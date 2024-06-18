@@ -6,10 +6,11 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 
 const BooksTable = () => {
   const [books, setBooks] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const booksPerPage = 6;
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch books data from the backend
     const fetchBooks = async () => {
       try {
         const response = await axios.get("http://localhost:5000/books");
@@ -23,11 +24,11 @@ const BooksTable = () => {
   }, []);
 
   const handleGoToDashboard = () => {
-    navigate("/admin-dashboard"); // Adjust the route as needed
+    navigate("/admin-dashboard");
   };
 
   const handleEdit = (bookId) => {
-    navigate(`/update-book/${bookId}`); // Adjust the route as needed
+    navigate(`/update-book/${bookId}`);
   };
 
   const handleDelete = async (bookId) => {
@@ -36,6 +37,25 @@ const BooksTable = () => {
       setBooks(books.filter((book) => book._id !== bookId));
     } catch (error) {
       console.error("Error deleting book:", error);
+    }
+  };
+
+  const totalPages = Math.ceil(books.length / booksPerPage);
+
+  const currentBooks = books.slice(
+    (currentPage - 1) * booksPerPage,
+    currentPage * booksPerPage
+  );
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
     }
   };
 
@@ -74,7 +94,7 @@ const BooksTable = () => {
               </tr>
             </thead>
             <tbody>
-              {books.map((book, index) => (
+              {currentBooks.map((book, index) => (
                 <tr
                   key={book._id}
                   className={`bg-${index % 2 === 0 ? "blue-100" : "blue-200"}`}
@@ -118,6 +138,33 @@ const BooksTable = () => {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+            className={`py-2 px-4 rounded-lg shadow ${
+              currentPage === 1
+                ? "bg-gray-300"
+                : "bg-blue-500 hover:bg-blue-600 text-white"
+            }`}
+          >
+            Previous
+          </button>
+          <span className="text-xl">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className={`py-2 px-4 rounded-lg shadow ${
+              currentPage === totalPages
+                ? "bg-gray-300"
+                : "bg-blue-500 hover:bg-blue-600 text-white"
+            }`}
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
