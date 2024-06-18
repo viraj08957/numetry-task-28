@@ -9,7 +9,6 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 
 function UserDashboard() {
-  // eslint-disable-next-line no-unused-vars
   const navigate = useNavigate();
   const [books, setBooks] = useState([]);
 
@@ -76,14 +75,15 @@ function UserDashboard() {
                 <img
                   src={book.imageUrl}
                   alt={book.title}
-                  className="w-48 h-64 object-cover rounded-lg mb-4 shadow-lg transition-transform duration-300 hover:scale-105"
+                  className="w-full h-auto object-contain rounded-lg mb-4 shadow-lg transition-transform duration-300 hover:scale-105"
+                  style={{ maxHeight: "400px" }}
                 />
                 <h3 className="text-2xl font-bold mb-2">{book.title}</h3>
                 <p className="text-gray-600 mb-2 text-center">
                   {book.description}
                 </p>
                 <p className="text-gray-800 font-semibold mb-2">
-                  Price: ${book.price}
+                  Price: ₹{book.price}
                 </p>
                 <p className="text-gray-800 mb-2">Author: {book.author.name}</p>
                 <p className="text-gray-800">
