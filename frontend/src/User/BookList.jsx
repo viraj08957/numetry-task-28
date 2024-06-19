@@ -30,7 +30,7 @@ const BookList = ({ books, addToCart, cartItems }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-6 relative">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r bg-black p-6 relative">
       <div className="absolute top-8 right-8">
         <Link to="/user-dashboard">
           <button className="p-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg shadow-lg">
@@ -45,7 +45,7 @@ const BookList = ({ books, addToCart, cartItems }) => {
         </Link>
       </div>
 
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl mt-16">
+      <div className="bg-gray-800 text-white p-8 rounded-lg shadow-lg w-full max-w-5xl mt-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {currentBooks.map((book) => (
             <BookCard key={book._id} book={book} onAddToCart={addToCart} />

@@ -57,7 +57,7 @@ const UpdateBook = () => {
       );
       setMessage(response.data.message);
       setTimeout(() => {
-        navigate(`/view-book/${bookId}`); // Navigate to view book page
+        navigate(`/view-book/${bookId}`); 
       }, 2000);
     } catch (error) {
       console.error("Error updating book:", error);
@@ -66,7 +66,7 @@ const UpdateBook = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r bg-black p-6">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
         <h2 className="text-2xl font-bold mb-6">Update Book</h2>
         <form onSubmit={handleSubmit}>

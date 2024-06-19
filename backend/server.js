@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 app.use(cors());
@@ -12,6 +13,7 @@ app.use(bodyParser.json());
 
 const port = 5000;
 const url = process.env.URL;
+const secret = process.env.JWT_SECRET || "your_jwt_secret_key";
 
 mongoose
   .connect(url, {
@@ -103,11 +105,19 @@ app.post("/login", async (req, res) => {
       user.logins.push({ loginTime });
       await user.save();
       const loginIndex = user.logins.length - 1;
+
+      const token = jwt.sign({ id: user._id, loginIndex }, secret, {
+        expiresIn: "1h",
+      });
+
+      // Log the token to the console
+      console.log("Generated Token:", token);
+
       const message =
         user.userType === "admin"
           ? "Welcome to the admin dashboard"
           : "Welcome to the user dashboard";
-      res.send({ message, loginIndex });
+      res.send({ message, token });
     } else {
       res.status(401).send({ message: "Invalid email or password" });
     }
@@ -117,23 +127,30 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/logout", async (req, res) => {
-  const { email, loginIndex } = req.body;
+const authenticateJWT = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (token) {
+    jwt.verify(token, secret, (err, user) => {
+      if (err) {
+        return res.status(403).send({ message: "Forbidden" });
+      }
+      req.user = user;
+      next();
+    });
+  } else {
+    res.status(401).send({ message: "Unauthorized" });
+  }
+};
+
+app.get("/current-user", authenticateJWT, async (req, res) => {
   try {
-    const user = await User.findOne({ email });
-    if (user && user.logins[loginIndex]) {
-      user.logins[loginIndex].logoutTime = new Date();
-      await user.save();
-      res.send({ message: "Logout successful" });
-    } else {
-      res.status(404).send({ message: "User or login session not found" });
-    }
+    const user = await User.findById(req.user.id).select("-password");
+    res.send(user);
   } catch (error) {
     console.error(error);
-    res.status(500).send({ message: "Error logging out" });
+    res.status(500).send({ message: "Error retrieving user information" });
   }
 });
-
 app.get("/user-logs", async (req, res) => {
   try {
     const users = await User.find({ userType: "user" }, "name email logins");
@@ -371,6 +388,43 @@ app.delete("/delete-book/:bookId", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Error deleting book" });
+  }
+});
+
+app.get("/search-books", async (req, res) => {
+  const { title, authorName, publisherName } = req.query;
+
+  try {
+    let query = {};
+
+    if (title) {
+      query.title = new RegExp(title, "i");
+    }
+
+    if (authorName) {
+      const author = await Author.findOne({
+        name: new RegExp(authorName, "i"),
+      });
+      if (author) {
+        query.author = author._id;
+      }
+    }
+
+    if (publisherName) {
+      const publisher = await Publisher.findOne({
+        name: new RegExp(publisherName, "i"),
+      });
+      if (publisher) {
+        query.publisher = publisher._id;
+      }
+    }
+
+    const books = await Book.find(query).populate("author publisher", "name");
+
+    res.send(books);
+  } catch (error) {
+    console.error("Error retrieving books:", error);
+    res.status(500).send({ message: "Error retrieving books" });
   }
 });
 

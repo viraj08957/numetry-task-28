@@ -60,7 +60,7 @@ const BooksTable = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r bg-black p-6">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl">
         <div className="flex justify-between items-center mb-4">
           <button

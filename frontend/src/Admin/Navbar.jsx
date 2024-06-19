@@ -39,5 +39,4 @@ function Navbar({ onLogout }) {
     </nav>
   );
 }
-
 export default Navbar;

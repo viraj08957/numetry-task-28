@@ -96,12 +96,12 @@ function AdminDashboard() {
   return (
     <div>
       <Navbar onLogout={handleLogout} />
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-6">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r bg-black p-6">
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl">
           <div className="overflow-x-auto">
-            <table className="w-full table-auto border-collapse">
+            <table className="w-full table-auto border border-gray-300">
               <thead>
-                <tr className="bg-indigo-500 text-white">
+                <tr className="bg-gray-800 text-white">
                   <th className="border border-gray-300 p-3 text-left">Name</th>
                   <th className="border border-gray-300 p-3 text-left">
                     Email
@@ -164,10 +164,7 @@ function AdminDashboard() {
               </tbody>
             </table>
           </div>
-          {message && (
-            <p className="mt-4 text-center text-green-500">{message}</p>
-          )}
-
+          {message && <p className="mt-4 text-center text-white">{message}</p>}
           <div className="flex justify-center mt-4">
             <button
               className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"

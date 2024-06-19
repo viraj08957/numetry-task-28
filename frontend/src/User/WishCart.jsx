@@ -16,7 +16,7 @@ const WishCart = ({ cartItems, removeFromCart }) => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-6 relative">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-black p-6 relative">
       <div className="absolute top-8 right-8">
         <Link to="/user-dashboard">
           <button className="p-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg shadow-lg">
@@ -31,16 +31,15 @@ const WishCart = ({ cartItems, removeFromCart }) => {
         </Link>
       </div>
 
-      {/* Close Button at the top-center */}
       <div className="absolute top-8 left-1/2 transform -translate-x-1/2">
         <Link to="/view-books">
-          <button className="p-3 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold rounded-lg shadow-lg">
+          <button className="p-3 bg-gray-700 hover:bg-gray-800 text-white font-bold rounded-lg shadow-lg">
             Close
           </button>
         </Link>
       </div>
 
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-5xl mt-16">
+      <div className="bg-gray-800 text-white p-8 rounded-lg shadow-lg w-full max-w-5xl mt-16">
         <h2 className="text-2xl font-bold mb-4">WishCart Items</h2>
         {aggregatedBooks.length === 0 ? (
           <p className="text-lg">No items in your WishCart.</p>
@@ -49,7 +48,7 @@ const WishCart = ({ cartItems, removeFromCart }) => {
             {aggregatedBooks.map((book) => (
               <li
                 key={book._id}
-                className="max-w-sm rounded overflow-hidden shadow-lg bg-white"
+                className="max-w-sm rounded overflow-hidden shadow-lg bg-gray-900 text-white"
               >
                 <img className="w-full" src={book.imageUrl} alt={book.title} />
                 <div className="px-6 py-4">

@@ -53,12 +53,12 @@ const BookCard = ({ book, onAddToCart }) => {
 
       {showModal && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-lg max-w-3xl overflow-y-auto">
+          <div className="bg-gray-800 p-8 rounded-lg shadow-lg max-w-3xl overflow-y-auto text-white">
             <div className="flex justify-between mb-4">
               <h2 className="text-xl font-bold">{book.title}</h2>
               <button
                 onClick={handleCloseModal}
-                className="text-gray-600 hover:text-gray-800 focus:outline-none"
+                className="text-gray-300 hover:text-gray-400 focus:outline-none"
                 aria-label="Close Modal"
               >
                 <svg
