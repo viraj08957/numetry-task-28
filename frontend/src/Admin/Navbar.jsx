@@ -28,7 +28,7 @@ function Navbar({ onLogout }) {
               Upload Book
             </button>
             <button
-              onClick={onLogout}
+              onClick={() => navigate("/login")}
               className="p-3 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-lg"
             >
               Logout

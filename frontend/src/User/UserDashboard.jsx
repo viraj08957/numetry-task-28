@@ -1,10 +1,13 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { Carousel } from "react-responsive-carousel";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import Slider from "react-slick";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import BookCard from "./BookCard";
@@ -14,20 +17,6 @@ function UserDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/books");
-        setBooks(response.data);
-      } catch (error) {
-        console.error("Failed to fetch books:", error);
-        alert("Failed to fetch books. Please try again.");
-      }
-    };
-
-    fetchBooks();
-  }, []);
 
   const handleSearchByTitle = async () => {
     if (searchTerm.trim() === "") {
@@ -48,43 +37,44 @@ function UserDashboard() {
     }
   };
 
-  const renderArrowPrev = (onClickHandler, hasPrev) => {
-    return (
-      hasPrev && (
-        <button
-          type="button"
-          onClick={onClickHandler}
-          title="Previous"
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2 shadow-lg z-10 focus:outline-none"
-        >
-          <FaChevronLeft />
-        </button>
-      )
-    );
-  };
-
-  const renderArrowNext = (onClickHandler, hasNext) => {
-    return (
-      hasNext && (
-        <button
-          type="button"
-          onClick={onClickHandler}
-          title="Next"
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2 shadow-lg z-10 focus:outline-none"
-        >
-          <FaChevronRight />
-        </button>
-      )
-    );
-  };
-
   const openModal = (book) => {
     console.log("Open modal for book:", book);
   };
 
+  const NextArrow = (props) => {
+    const { onClick } = props;
+    return (
+      <div className="absolute top-1/2 right-2 transform -translate-y-1/2 z-10 cursor-pointer">
+        <FaArrowRight onClick={onClick} size={30} color="white" />
+      </div>
+    );
+  };
+
+  const PrevArrow = (props) => {
+    const { onClick } = props;
+    return (
+      <div className="absolute top-1/2 left-2 transform -translate-y-1/2 z-10 cursor-pointer">
+        <FaArrowLeft onClick={onClick} size={30} color="white" />
+      </div>
+    );
+  };
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
+    className: "w-full h-screen",
+  };
+
+  const carouselImages = ["/img2.png", "/img3.png", "/img4.png", "/img1.png"];
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      <Navbar /> 
+      <Navbar />
       <div className="container mx-auto px-4 py-8">
         <h2 className="text-4xl font-bold text-center mb-8">
           Discover Your Next Great Read
@@ -110,43 +100,34 @@ function UserDashboard() {
             {isSearching ? "Searching..." : "Search"}
           </motion.button>
         </div>
-        {searchResults.length > 0 ? (
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            {searchResults.map((book) => (
-              <BookCard key={book._id} book={book} openModal={openModal} />
-            ))}
-          </motion.div>
-        ) : (
-          books.length > 0 && (
-            <Carousel
-              showThumbs={false}
-              autoPlay
-              infiniteLoop
-              renderArrowPrev={renderArrowPrev}
-              renderArrowNext={renderArrowNext}
-              className="my-6"
-            >
-              {books.map((book) => (
-                <div key={book._id} className="flex flex-col items-center p-4">
-                  <img
-                    src={book.imageUrl}
-                    alt={book.title}
-                    className="w-full h-auto object-contain rounded-lg mb-4 shadow-lg transition-transform duration-300 hover:scale-105"
-                    style={{ maxHeight: "400px" }}
-                    onClick={() => openModal(book)}
-                  />
-                  <h3 className="text-2xl font-bold mb-2">{book.title}</h3>
-                </div>
-              ))}
-            </Carousel>
-          )
-        )}
       </div>
+      {searchResults.length > 0 ? (
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {searchResults.map((book) => (
+            <BookCard key={book._id} book={book} openModal={openModal} />
+          ))}
+        </motion.div>
+      ) : (
+        books.length > 0 && {}
+      )}
+
+      <Slider {...settings}>
+        {carouselImages.map((image, index) => (
+          <div key={index} className="relative w-full h-screen">
+            <img
+              src={image}
+              alt={`Carousel ${index + 1}`}
+              className="object-cover w-full h-full"
+            />
+          </div>
+        ))}
+      </Slider>
+
       <Footer />
     </div>
   );
