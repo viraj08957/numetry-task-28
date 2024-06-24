@@ -14,26 +14,19 @@ import BookCard from "./BookCard";
 
 function UserDashboard() {
   const [books, setBooks] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSearchByTitle = async () => {
-    if (searchTerm.trim() === "") {
-      return;
-    }
+  useEffect(() => {
+    fetchBooks();
+  }, []);
 
-    setIsSearching(true);
+  const fetchBooks = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:5000/search-books?title=${searchTerm}`
-      );
-      setSearchResults(response.data);
+      const response = await axios.get("http://localhost:5000/books");
+      setBooks(response.data);
     } catch (error) {
-      console.error("Failed to search books by title:", error);
-      alert("Failed to search books by title. Please try again.");
-    } finally {
-      setIsSearching(false);
+      console.error("Error fetching books:", error);
+      setError("Failed to fetch books. Please try again.");
     }
   };
 
@@ -65,9 +58,10 @@ function UserDashboard() {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 1000, // 1 second
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
-    className: "w-full h-screen",
   };
 
   const carouselImages = ["/img2.png", "/img3.png", "/img4.png", "/img1.png"];
@@ -75,58 +69,42 @@ function UserDashboard() {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <Navbar />
-      <div className="container mx-auto px-4 py-8">
-        <h2 className="text-4xl font-bold text-center mb-8">
-          Discover Your Next Great Read
-        </h2>
-        <div className="flex justify-center mb-6">
-          <motion.input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search books by title..."
-            className="p-3 rounded-md border border-gray-700 bg-gray-800 text-white focus:outline-none focus:border-blue-500 focus:bg-gray-900"
-            whileHover={{ scale: 1.05 }}
-            whileFocus={{ scale: 1.05, boxShadow: "0 0 5px rgba(0,0,0,0.3)" }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          />
-          <motion.button
-            type="button"
-            onClick={handleSearchByTitle}
-            className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {isSearching ? "Searching..." : "Search"}
-          </motion.button>
-        </div>
+
+      <div className="carousel-container w-full h-128 p-12">
+        <Slider {...settings}>
+          {carouselImages.map((image, index) => (
+            <div key={index} className="relative w-full h-128">
+              <img
+                src={image}
+                alt={`Carousel ${index + 1}`}
+                className="object-cover w-full h-full rounded-md"
+              />
+            </div>
+          ))}
+        </Slider>
       </div>
-      {searchResults.length > 0 ? (
+
+      <h2 className="text-4xl font-bold text-center my-8">
+        Discover Your Next Great Read
+      </h2>
+
+      <div className="container mx-auto px-4">
+        {error && <p className="text-red-500">{error}</p>}
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {searchResults.map((book) => (
-            <BookCard key={book._id} book={book} openModal={openModal} />
+          {books.map((book) => (
+            <div key={book._id} className="flex justify-center">
+              <div className="max-w-xs">
+                <BookCard book={book} openModal={openModal} />
+              </div>
+            </div>
           ))}
         </motion.div>
-      ) : (
-        books.length > 0 && {}
-      )}
-
-      <Slider {...settings}>
-        {carouselImages.map((image, index) => (
-          <div key={index} className="relative w-full h-screen">
-            <img
-              src={image}
-              alt={`Carousel ${index + 1}`}
-              className="object-cover w-full h-full"
-            />
-          </div>
-        ))}
-      </Slider>
+      </div>
 
       <Footer />
     </div>

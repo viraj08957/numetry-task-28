@@ -11,6 +11,7 @@ import BookUpload from "./Admin/UploadBook";
 import UpdateBook from "./Admin/UpdateBook";
 import WishCart from "./User/WishCart";
 import axios from "axios";
+import UserInfo from "./User/UserInfo";
 
 function App() {
   const [books, setBooks] = useState([]);
@@ -29,23 +30,25 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const savedCartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
+    const savedCartItems = JSON.parse(
+      localStorage.getItem("cartItems") || "[]"
+    );
     setCartItems(savedCartItems);
-    
-  },[]);
+  }, []);
 
-  const addToCart = (book)=>{
-    const updatedCartItems = [...cartItems,book];
+  const addToCart = (book) => {
+    const updatedCartItems = [...cartItems, book];
     setCartItems(updatedCartItems);
-    localStorage.setItem("cartItems",JSON.stringify(updatedCartItems))
-  }
-  
-  const removeFromCart = (bookToRemove)=>{
-    const updatedCartItems = cartItems.filter((book)=>book._id !== bookToRemove._id);
-    setCartItems(updatedCartItems);
-    localStorage.setItem("cartItems",JSON.stringify(updatedCartItems));
+    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+  };
 
-  }
+  const removeFromCart = (bookToRemove) => {
+    const updatedCartItems = cartItems.filter(
+      (book) => book._id !== bookToRemove._id
+    );
+    setCartItems(updatedCartItems);
+    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+  };
 
   return (
     <Router>
@@ -55,11 +58,26 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/user-dashboard" element={<UserDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/view-books"  element={<BookList books={books} addToCart={addToCart} cartItems={cartItems}/>} />
+        <Route
+          path="/view-books"
+          element={
+            <BookList
+              books={books}
+              addToCart={addToCart}
+              cartItems={cartItems}
+            />
+          }
+        />
         <Route path="/booklist" element={<BooksTable />} />
         <Route path="/upload-book" element={<BookUpload />} />
         <Route path="/update-book/:bookId" element={<UpdateBook />} />
-        <Route path="/cart" element={<WishCart cartItems={cartItems} removeFromCart={removeFromCart}/>}/>
+        <Route
+          path="/cart"
+          element={
+            <WishCart cartItems={cartItems} removeFromCart={removeFromCart} />
+          }
+        />
+        <Route path="user" element={<UserInfo />} />
       </Routes>
     </Router>
   );

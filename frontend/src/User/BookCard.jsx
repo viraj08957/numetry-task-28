@@ -2,16 +2,29 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { FaCartPlus } from "react-icons/fa";
+import axios from "axios";
 
 const BookCard = ({ book, onAddToCart }) => {
   const [showModal, setShowModal] = useState(false);
+  const [totalCounts, setTotalCounts] = useState(book.totalCounts);
 
   const handleAddToCartClick = () => {
     onAddToCart(book);
   };
 
-  const handleBuyClick = () => {
-    console.log(`Buying ${book.title}`);
+  const handleBuyClick = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/buy-book/${book._id}`
+      );
+      if (response.status === 200) {
+        setTotalCounts(response.data.totalCounts);
+        alert(`Successfully bought ${book.title}`);
+      }
+    } catch (error) {
+      console.error(`Error buying ${book.title}:`, error);
+      alert(error.response?.data?.message || "Error purchasing book");
+    }
   };
 
   const handleViewMoreClick = () => {
@@ -96,6 +109,9 @@ const BookCard = ({ book, onAddToCart }) => {
                 </p>
                 <p className="text-sm mb-2">
                   <strong>Price:</strong> ₹{book.price}
+                </p>
+                <p className="text-sm mb-2">
+                  <strong>Available Quantity</strong> {totalCounts}
                 </p>
                 <p className="text-sm mb-2">
                   <strong>Description:</strong> {book.description}

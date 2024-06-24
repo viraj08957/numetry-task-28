@@ -10,10 +10,6 @@ function Navbar() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
-
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
   };
@@ -38,15 +34,6 @@ function Navbar() {
     setIsProfileOpen(false);
   };
 
-  const fetchUserData = async () => {
-    try {
-      const response = await axios.get("/api/current-user");
-      setUser(response.data);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
-
   return (
     <div>
       <nav className="w-full bg-gray-900 p-4 flex items-center relative border-b border-gray-700">
@@ -59,7 +46,7 @@ function Navbar() {
         </button>
         <div className="flex items-center space-x-4">
           <div className="text-white text-2xl font-bold">MyBookstore</div>
-          {/* Adjust the width for spacing */}
+
           <div className="w-4"></div>
         </div>
       </nav>
@@ -79,10 +66,7 @@ function Navbar() {
           <button
             type="button"
             className="text-xl mb-4 flex items-center hover:underline text-white"
-            onClick={() => {
-              toggleNavbar();
-              handleProfileClick();
-            }}
+            onClick={() => navigate("/user")}
           >
             <FaUser className="mr-2" /> Profile
           </button>

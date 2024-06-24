@@ -61,6 +61,7 @@ const BookSchema = new mongoose.Schema({
     required: true,
   },
   totalCounts: { type: Number, required: true },
+  soldCounts: { type: Number, default: 0 }, 
   publishingDate: { type: Date, required: true },
   price: { type: Number, required: true },
   imageUrl: { type: String, required: true },
@@ -110,7 +111,6 @@ app.post("/login", async (req, res) => {
         expiresIn: "1h",
       });
 
-      // Log the token to the console
       console.log("Generated Token:", token);
 
       const message =
@@ -425,6 +425,31 @@ app.get("/search-books", async (req, res) => {
   } catch (error) {
     console.error("Error retrieving books:", error);
     res.status(500).send({ message: "Error retrieving books" });
+  }
+});
+
+app.put("/buy-book/:bookId", async (req, res) => {
+  const bookId = req.params.bookId;
+  try {
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).send({ message: "Book not found" });
+    }
+
+    if (book.totalCounts > 0) {
+      book.totalCounts -= 1;
+      book.soldCounts += 1;
+      await book.save();
+      res.send({
+        message: "Book purchased successfully",
+        totalCounts: book.totalCounts,
+      });
+    } else {
+      res.status(400).send({ message: "Book is out of stock" });
+    }
+  } catch (error) {
+    console.error("Error purchasing book:", error);
+    res.status(500).send({ message: "Error purchasing book" });
   }
 });
 

@@ -84,6 +84,9 @@ const BooksTable = () => {
                   Total Counts
                 </th>
                 <th className="border border-gray-300 p-3 text-left">
+                  Sold Counts
+                </th>
+                <th className="border border-gray-300 p-3 text-left">
                   Publishing Date
                 </th>
                 <th className="border border-gray-300 p-3 text-left">Price</th>
@@ -108,6 +111,9 @@ const BooksTable = () => {
                   </td>
                   <td className="border border-gray-300 p-3">
                     {book.totalCounts}
+                  </td>
+                  <td className="border border-gray-300 p-3">
+                    {book.soldCounts}
                   </td>
                   <td className="border border-gray-300 p-3">
                     {new Date(book.publishingDate).toLocaleDateString()}
