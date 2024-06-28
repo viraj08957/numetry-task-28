@@ -12,6 +12,7 @@ import UpdateBook from "./Admin/UpdateBook";
 import WishCart from "./User/WishCart";
 import axios from "axios";
 import UserInfo from "./User/UserInfo";
+import ContactMessages from "./Admin/ContactMessages";
 
 function App() {
   const [books, setBooks] = useState([]);
@@ -77,7 +78,8 @@ function App() {
             <WishCart cartItems={cartItems} removeFromCart={removeFromCart} />
           }
         />
-        <Route path="user" element={<UserInfo />} />
+        <Route path="/user" element={<UserInfo />} />
+        <Route path="/view-messages" element={<ContactMessages/>} />
       </Routes>
     </Router>
   );

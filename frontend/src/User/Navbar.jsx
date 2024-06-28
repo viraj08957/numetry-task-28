@@ -1,6 +1,13 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
-import { FaBars, FaTimes, FaBook, FaUser, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaBars,
+  FaTimes,
+  FaBook,
+  FaUser,
+  FaSignOutAlt,
+  FaEnvelope,
+} from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 

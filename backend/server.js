@@ -11,7 +11,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-const port = 5000;
+const port = process.env.PORT || 5000;
 const url = process.env.URL;
 const secret = process.env.JWT_SECRET || "your_jwt_secret_key";
 
@@ -61,17 +61,25 @@ const BookSchema = new mongoose.Schema({
     required: true,
   },
   totalCounts: { type: Number, required: true },
-  soldCounts: { type: Number, default: 0 }, 
+  soldCounts: { type: Number, default: 0 },
   publishingDate: { type: Date, required: true },
   price: { type: Number, required: true },
   imageUrl: { type: String, required: true },
   description: { type: String, required: true },
 });
 
+const ContactSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  message: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
 const User = mongoose.model("User", UserSchema);
 const Author = mongoose.model("Author", AuthorSchema);
 const Publisher = mongoose.model("Publisher", PublisherSchema);
 const Book = mongoose.model("Book", BookSchema);
+const ContactMessage = mongoose.model("ContactMessage", ContactSchema);
 
 app.post("/register", async (req, res) => {
   const { name, phone, email, username, password } = req.body;
@@ -151,6 +159,7 @@ app.get("/current-user", authenticateJWT, async (req, res) => {
     res.status(500).send({ message: "Error retrieving user information" });
   }
 });
+
 app.get("/user-logs", async (req, res) => {
   try {
     const users = await User.find({ userType: "user" }, "name email logins");
@@ -450,6 +459,30 @@ app.put("/buy-book/:bookId", async (req, res) => {
   } catch (error) {
     console.error("Error purchasing book:", error);
     res.status(500).send({ message: "Error purchasing book" });
+  }
+});
+
+app.post("/submit-contact", async (req, res) => {
+  const { name, email, message } = req.body;
+  try {
+    const contactMessage = new ContactMessage({ name, email, message });
+    await contactMessage.save();
+    res
+      .status(201)
+      .send({ message: "Contact information stored successfully" });
+  } catch (error) {
+    console.error("Error storing contact information:", error);
+    res.status(500).send({ message: "Error storing contact information" });
+  }
+});
+
+app.get("/contact-messages", async (req, res) => {
+  try {
+    const contactMessages = await ContactMessage.find().sort({ createdAt: -1 });
+    res.send(contactMessages);
+  } catch (error) {
+    console.error("Error retrieving contact messages:", error);
+    res.status(500).send({ message: "Error retrieving contact messages" });
   }
 });
 

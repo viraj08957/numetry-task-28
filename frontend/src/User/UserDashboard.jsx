@@ -11,6 +11,7 @@ import "slick-carousel/slick/slick-theme.css";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import BookCard from "./BookCard";
+import ContactForm from "./ContactForm";
 
 function UserDashboard() {
   const [books, setBooks] = useState([]);
@@ -105,7 +106,7 @@ function UserDashboard() {
           ))}
         </motion.div>
       </div>
-
+      <ContactForm />
       <Footer />
     </div>
   );

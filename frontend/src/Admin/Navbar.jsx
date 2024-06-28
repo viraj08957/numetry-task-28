@@ -16,6 +16,12 @@ function Navbar({ onLogout }) {
           </div>
           <div className="flex items-center space-x-4">
             <button
+              onClick={() => navigate("/view-messages")}
+              className="p-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg shadow-lg"
+            >
+              View Messages
+            </button>
+            <button
               onClick={() => navigate("/booklist")}
               className="p-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg shadow-lg"
             >
