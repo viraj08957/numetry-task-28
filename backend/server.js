@@ -440,33 +440,35 @@ app.get("/search-books", async (req, res) => {
 
 app.put("/buy-book/:bookId", async (req, res) => {
   const bookId = req.params.bookId;
+  const { quantity } = req.body;
   try {
     const book = await Book.findById(bookId);
     if (!book) {
       return res.status(404).send({ message: "Book not found" });
     }
 
-    if (book.totalCounts > 0) {
-      book.totalCounts -= 1;
-      book.soldCounts += 1;
+    if (book.totalCounts >= quantity && quantity > 0) {
+      book.totalCounts -= quantity;
+      book.soldCounts += quantity;
       await book.save();
       res.send({
-        message: "Book purchased successfully",
+        message: `Successfully bought ${quantity} ${book.title}(s)`,
         totalCounts: book.totalCounts,
       });
     } else {
-      res.status(400).send({ message: "Book is out of stock" });
+      res
+        .status(400)
+        .send({ message: "Invalid quantity or book is out of stock" });
     }
   } catch (error) {
     console.error("Error purchasing book:", error);
     res.status(500).send({ message: "Error purchasing book" });
   }
 });
-
 app.post("/submit-contact", async (req, res) => {
   const { name, email, phone, message } = req.body;
   try {
-    const contactMessage = new ContactMessage({ name, email,phone, message });
+    const contactMessage = new ContactMessage({ name, email, phone, message });
     await contactMessage.save();
     res
       .status(201)

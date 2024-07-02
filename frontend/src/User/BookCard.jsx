@@ -7,24 +7,10 @@ import axios from "axios";
 const BookCard = ({ book, onAddToCart }) => {
   const [showModal, setShowModal] = useState(false);
   const [totalCounts, setTotalCounts] = useState(book.totalCounts);
+  const [quantity, setQuantity] = useState(1); // Default quantity to 1
 
   const handleAddToCartClick = () => {
     onAddToCart(book);
-  };
-
-  const handleBuyClick = async () => {
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/buy-book/${book._id}`
-      );
-      if (response.status === 200) {
-        setTotalCounts(response.data.totalCounts);
-        alert(`Successfully bought ${book.title}`);
-      }
-    } catch (error) {
-      console.error(`Error buying ${book.title}:`, error);
-      alert(error.response?.data?.message || "Error purchasing book");
-    }
   };
 
   const handleViewMoreClick = () => {
@@ -33,6 +19,35 @@ const BookCard = ({ book, onAddToCart }) => {
 
   const handleCloseModal = () => {
     setShowModal(false);
+  };
+
+  const handleBuyClick = async () => {
+    const userQuantity = prompt("Enter quantity to buy:", "1");
+    if (userQuantity === null || userQuantity === "") {
+      // If user cancels or enters empty, do nothing
+      return;
+    }
+
+    const quantityToBuy = parseInt(userQuantity, 10);
+
+    if (isNaN(quantityToBuy) || quantityToBuy <= 0) {
+      alert("Please enter a valid quantity.");
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/buy-book/${book._id}`,
+        { quantity: quantityToBuy } // Send quantity in the request body
+      );
+      if (response.status === 200) {
+        setTotalCounts(response.data.totalCounts);
+        alert(`Successfully bought ${quantityToBuy} ${book.title}(s)`);
+      }
+    } catch (error) {
+      console.error(`Error buying ${book.title}:`, error);
+      alert(error.response?.data?.message || "Error purchasing book");
+    }
   };
 
   return (
