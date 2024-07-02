@@ -44,6 +44,9 @@ const ContactMessages = () => {
               Email
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+              Contact Number
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
               Message
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
@@ -56,6 +59,7 @@ const ContactMessages = () => {
             <tr key={message._id}>
               <td className="px-6 py-4 whitespace-nowrap">{message.name}</td>
               <td className="px-6 py-4 whitespace-nowrap">{message.email}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{message.phone}</td>
               <td className="px-6 py-4 whitespace-nowrap">{message.message}</td>
               <td className="px-6 py-4 whitespace-nowrap">
                 {new Date(message.createdAt).toLocaleString()}

@@ -71,6 +71,7 @@ const BookSchema = new mongoose.Schema({
 const ContactSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
+  phone: { type: Number, required: true },
   message: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
 });
@@ -463,9 +464,9 @@ app.put("/buy-book/:bookId", async (req, res) => {
 });
 
 app.post("/submit-contact", async (req, res) => {
-  const { name, email, message } = req.body;
+  const { name, email, phone, message } = req.body;
   try {
-    const contactMessage = new ContactMessage({ name, email, message });
+    const contactMessage = new ContactMessage({ name, email,phone, message });
     await contactMessage.save();
     res
       .status(201)

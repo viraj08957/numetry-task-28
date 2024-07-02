@@ -6,6 +6,7 @@ const ContactForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "", // Add phone field
     message: "",
   });
 
@@ -28,6 +29,7 @@ const ContactForm = () => {
       setFormData({
         name: "",
         email: "",
+        phone: "", // Reset phone field
         message: "",
       });
 
@@ -90,6 +92,23 @@ const ContactForm = () => {
                 id="email"
                 name="email"
                 value={formData.email}
+                onChange={handleChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
+                required
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-white"
+              >
+                Phone
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
                 required
