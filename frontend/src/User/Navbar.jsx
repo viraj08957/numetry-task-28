@@ -32,10 +32,6 @@ function Navbar() {
     }
   };
 
-  const handleProfileClick = () => {
-    setIsProfileOpen(true);
-  };
-
   const closeProfile = () => {
     setIsProfileOpen(false);
   };
@@ -68,13 +64,6 @@ function Navbar() {
           <FaTimes />
         </button>
         <div className="mt-20 flex flex-col items-center">
-          <button
-            type="button"
-            className="text-xl mb-4 flex items-center hover:underline text-white"
-            onClick={() => navigate("/user")}
-          >
-            <FaUser className="mr-2" /> Profile
-          </button>
           <Link
             to="/view-books"
             className="text-xl mb-4 flex items-center hover:underline text-white"

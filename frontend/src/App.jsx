@@ -11,7 +11,7 @@ import BookUpload from "./Admin/UploadBook";
 import UpdateBook from "./Admin/UpdateBook";
 import WishCart from "./User/WishCart";
 import axios from "axios";
-import UserInfo from "./User/UserInfo";
+
 import ContactMessages from "./Admin/ContactMessages";
 import PurchaseTable from "./Admin/PurchaseTable";
 
@@ -79,7 +79,7 @@ function App() {
             <WishCart cartItems={cartItems} removeFromCart={removeFromCart} />
           }
         />
-        <Route path="/user" element={<UserInfo />} />
+
         <Route path="/view-messages" element={<ContactMessages />} />
         <Route path="/view-purchases" element={<PurchaseTable />} />
       </Routes>
