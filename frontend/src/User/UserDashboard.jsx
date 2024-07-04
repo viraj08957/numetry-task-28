@@ -12,6 +12,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import BookCard from "./BookCard";
 import ContactForm from "./ContactForm";
+import Testimonials from "./Testimonials";
 
 function UserDashboard() {
   const [books, setBooks] = useState([]);
@@ -60,7 +61,7 @@ function UserDashboard() {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 1000, // 1 second
+    autoplaySpeed: 1000,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
   };
@@ -106,6 +107,7 @@ function UserDashboard() {
           ))}
         </motion.div>
       </div>
+      <Testimonials />
       <ContactForm />
       <Footer />
     </div>

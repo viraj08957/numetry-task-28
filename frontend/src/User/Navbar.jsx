@@ -23,9 +23,8 @@ function Navbar() {
 
   const handleLogout = async () => {
     try {
-      if (user && user.email) {
-        await axios.post("/api/logout", { email: user.email, loginIndex: 0 }); // Replace with your actual API endpoint
-      }
+      localStorage.removeItem("email");
+      localStorage.removeItem("password");
       alert("Logged out successfully");
       navigate("/login");
     } catch (error) {
@@ -53,7 +52,6 @@ function Navbar() {
         </button>
         <div className="flex items-center space-x-4">
           <div className="text-white text-2xl font-bold">MyBookstore</div>
-
           <div className="w-4"></div>
         </div>
       </nav>

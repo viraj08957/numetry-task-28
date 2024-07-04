@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import axios from "axios"; // Import Axios for making HTTP requests
+import axios from "axios";
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "", // Add phone field
+    phone: "",
     message: "",
   });
 
@@ -22,22 +22,20 @@ const ContactForm = () => {
     e.preventDefault();
 
     try {
-      // Send POST request to backend /submit-contact endpoint
       await axios.post("http://localhost:5000/submit-contact", formData);
 
-      // Reset form after successful submission
       setFormData({
         name: "",
         email: "",
-        phone: "", // Reset phone field
+        phone: "",
         message: "",
       });
 
       console.log("Form data submitted:", formData);
-      alert("Message sent successfully!"); // Optional: Show a success message
+      alert("Message sent successfully!");
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("Failed to send message. Please try again."); // Optional: Show an error message
+      alert("Failed to send message. Please try again.");
     }
   };
 

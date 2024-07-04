@@ -7,14 +7,19 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [storageMessage, setStorageMessage] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    // Store email and password in local storage
+    localStorage.setItem("email", email);
+    localStorage.setItem("password", password);
+    setStorageMessage("Email and password have been stored in local storage.");
+
     if (
       email === "numetrytechnologies@gmail.com" &&
       password === "@Numetry123"
     ) {
-      localStorage.setItem("email", email);
       localStorage.setItem("loginIndex", "admin");
       navigate("/admin-dashboard");
       return;
@@ -27,11 +32,9 @@ function Login() {
       });
       const { message, loginIndex } = response.data;
       if (message.includes("user dashboard")) {
-        localStorage.setItem("email", email);
         localStorage.setItem("loginIndex", loginIndex);
         navigate("/user-dashboard");
       } else if (message.includes("admin dashboard")) {
-        localStorage.setItem("email", email);
         localStorage.setItem("loginIndex", loginIndex);
         navigate("/admin-dashboard");
       } else {
@@ -39,6 +42,7 @@ function Login() {
       }
     } catch (error) {
       console.error(error);
+      setMessage("An error occurred during login. Please try again.");
     }
   };
 
@@ -78,6 +82,9 @@ function Login() {
           </span>
         </p>
         {message && <p className="mt-4 text-center text-red-500">{message}</p>}
+        {storageMessage && (
+          <p className="mt-4 text-center text-green-500">{storageMessage}</p>
+        )}
       </div>
     </div>
   );

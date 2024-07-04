@@ -13,6 +13,7 @@ import WishCart from "./User/WishCart";
 import axios from "axios";
 import UserInfo from "./User/UserInfo";
 import ContactMessages from "./Admin/ContactMessages";
+import PurchaseTable from "./Admin/PurchaseTable";
 
 function App() {
   const [books, setBooks] = useState([]);
@@ -79,7 +80,8 @@ function App() {
           }
         />
         <Route path="/user" element={<UserInfo />} />
-        <Route path="/view-messages" element={<ContactMessages/>} />
+        <Route path="/view-messages" element={<ContactMessages />} />
+        <Route path="/view-purchases" element={<PurchaseTable />} />
       </Routes>
     </Router>
   );

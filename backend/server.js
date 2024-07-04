@@ -76,11 +76,40 @@ const ContactSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
+const PurchaseSchema = new mongoose.Schema({
+  book: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Book",
+    required: true,
+  },
+  userEmail: {
+    type: String,
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  totalAmount: {
+    type: Number,
+    required: true,
+  },
+  purchaseDate: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
 const User = mongoose.model("User", UserSchema);
 const Author = mongoose.model("Author", AuthorSchema);
 const Publisher = mongoose.model("Publisher", PublisherSchema);
 const Book = mongoose.model("Book", BookSchema);
 const ContactMessage = mongoose.model("ContactMessage", ContactSchema);
+const Purchase = mongoose.model("Purchase", PurchaseSchema);
 
 app.post("/register", async (req, res) => {
   const { name, phone, email, username, password } = req.body;
@@ -440,7 +469,8 @@ app.get("/search-books", async (req, res) => {
 
 app.put("/buy-book/:bookId", async (req, res) => {
   const bookId = req.params.bookId;
-  const { quantity } = req.body;
+  const { quantity, userEmail, bookTitle, bookPrice, totalAmount } = req.body;
+
   try {
     const book = await Book.findById(bookId);
     if (!book) {
@@ -451,8 +481,19 @@ app.put("/buy-book/:bookId", async (req, res) => {
       book.totalCounts -= quantity;
       book.soldCounts += quantity;
       await book.save();
+
+      const purchase = new Purchase({
+        book: bookId,
+        userEmail,
+        quantity,
+        price: bookPrice,
+        totalAmount,
+      });
+
+      await purchase.save();
+
       res.send({
-        message: `Successfully bought ${quantity} ${book.title}(s)`,
+        message: `Successfully bought ${quantity} ${bookTitle}(s)`,
         totalCounts: book.totalCounts,
       });
     } else {
@@ -465,6 +506,19 @@ app.put("/buy-book/:bookId", async (req, res) => {
     res.status(500).send({ message: "Error purchasing book" });
   }
 });
+
+app.get("/purchases", async (req, res) => {
+  try {
+    const purchases = await Purchase.find()
+      .populate("book", "title")
+      .sort({ purchaseDate: -1 });
+    res.send(purchases);
+  } catch (error) {
+    console.error("Error retrieving purchases:", error);
+    res.status(500).send({ message: "Error retrieving purchases" });
+  }
+});
+
 app.post("/submit-contact", async (req, res) => {
   const { name, email, phone, message } = req.body;
   try {

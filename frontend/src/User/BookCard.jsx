@@ -7,8 +7,7 @@ import axios from "axios";
 const BookCard = ({ book, onAddToCart }) => {
   const [showModal, setShowModal] = useState(false);
   const [totalCounts, setTotalCounts] = useState(book.totalCounts);
-  const [quantity, setQuantity] = useState(1); // Default quantity to 1
-
+  const [quantity, setQuantity] = useState(1);
   const handleAddToCartClick = () => {
     onAddToCart(book);
   };
@@ -24,7 +23,6 @@ const BookCard = ({ book, onAddToCart }) => {
   const handleBuyClick = async () => {
     const userQuantity = prompt("Enter quantity to buy:", "1");
     if (userQuantity === null || userQuantity === "") {
-      // If user cancels or enters empty, do nothing
       return;
     }
 
@@ -36,20 +34,33 @@ const BookCard = ({ book, onAddToCart }) => {
     }
 
     try {
+      const userEmail = localStorage.getItem("email");
+
+      if (!userEmail) {
+        alert("User information not found. Please log in again.");
+        return;
+      }
+
       const response = await axios.put(
         `http://localhost:5000/buy-book/${book._id}`,
-        { quantity: quantityToBuy } // Send quantity in the request body
+        {
+          quantity: quantityToBuy,
+          userEmail: userEmail,
+          bookTitle: book.title,
+          bookPrice: book.price,
+          totalAmount: quantityToBuy * book.price,
+        }
       );
+
       if (response.status === 200) {
         setTotalCounts(response.data.totalCounts);
         alert(`Successfully bought ${quantityToBuy} ${book.title}(s)`);
       }
     } catch (error) {
-      console.error(`Error buying ${book.title}:`, error);
-      alert(error.response?.data?.message || "Error purchasing book");
+      console.error(`Error buying book: ${error.message}`);
+      alert("Error buying book. Please try again later.");
     }
   };
-
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg bg-white">
       <img
