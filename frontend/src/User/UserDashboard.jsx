@@ -3,22 +3,21 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import Slider from "react-slick";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import BookCard from "./BookCard";
-import ContactForm from "./ContactForm";
-import Testimonials from "./Testimonials";
 
 function UserDashboard() {
   const [books, setBooks] = useState([]);
   const [error, setError] = useState("");
+  const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
+    const email = localStorage.getItem("userEmail");
+    if (email) {
+      setUserEmail(email);
+    }
     fetchBooks();
   }, []);
 
@@ -36,54 +35,16 @@ function UserDashboard() {
     console.log("Open modal for book:", book);
   };
 
-  const NextArrow = (props) => {
-    const { onClick } = props;
-    return (
-      <div className="absolute top-1/2 right-2 transform -translate-y-1/2 z-10 cursor-pointer">
-        <FaArrowRight onClick={onClick} size={30} color="white" />
-      </div>
-    );
-  };
-
-  const PrevArrow = (props) => {
-    const { onClick } = props;
-    return (
-      <div className="absolute top-1/2 left-2 transform -translate-y-1/2 z-10 cursor-pointer">
-        <FaArrowLeft onClick={onClick} size={30} color="white" />
-      </div>
-    );
-  };
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 1000,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
-  };
-
-  const carouselImages = ["/img2.png", "/img3.png", "/img4.png", "/img1.png"];
-
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <Navbar />
 
-      <div className="carousel-container w-full h-128 p-12">
-        <Slider {...settings}>
-          {carouselImages.map((image, index) => (
-            <div key={index} className="relative w-full h-128">
-              <img
-                src={image}
-                alt={`Carousel ${index + 1}`}
-                className="object-cover w-full h-full rounded-md"
-              />
-            </div>
-          ))}
-        </Slider>
+      <div className="px-4 py-2">
+        {userEmail && (
+          <p className="text-lg">
+            Welcome, <span className="font-bold">{userEmail}</span>!
+          </p>
+        )}
       </div>
 
       <h2 className="text-4xl font-bold text-center my-8">
@@ -107,8 +68,7 @@ function UserDashboard() {
           ))}
         </motion.div>
       </div>
-      <Testimonials />
-      <ContactForm />
+
       <Footer />
     </div>
   );

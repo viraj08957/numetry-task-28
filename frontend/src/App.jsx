@@ -11,6 +11,7 @@ import BookUpload from "./Admin/UploadBook";
 import UpdateBook from "./Admin/UpdateBook";
 import WishCart from "./User/WishCart";
 import axios from "axios";
+import LandingPage from "./Pages/LandingPage";
 
 import ContactMessages from "./Admin/ContactMessages";
 import PurchaseTable from "./Admin/PurchaseTable";
@@ -55,7 +56,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<LandingPage/>}/>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/user-dashboard" element={<UserDashboard />} />

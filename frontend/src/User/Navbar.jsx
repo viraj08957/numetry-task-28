@@ -9,13 +9,22 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const email = localStorage.getItem("email");
+    const password = localStorage.getItem("password");
+    if (email && password) {
+      setUser({ email });
+      setLoggedIn(true);
+    }
+  }, []);
 
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
@@ -25,8 +34,10 @@ function Navbar() {
     try {
       localStorage.removeItem("email");
       localStorage.removeItem("password");
+      setUser(null);
+      setLoggedIn(false);
       alert("Logged out successfully");
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.error("Error logging out:", error);
     }
@@ -34,6 +45,16 @@ function Navbar() {
 
   const closeProfile = () => {
     setIsProfileOpen(false);
+  };
+
+  const handleBuyBooks = () => {
+    const email = localStorage.getItem("email");
+    const password = localStorage.getItem("password");
+    if (email && password) {
+      navigate("/view-books");
+    } else {
+      alert("Please log in to buy books.");
+    }
   };
 
   return (
@@ -49,6 +70,9 @@ function Navbar() {
         <div className="flex items-center space-x-4">
           <div className="text-white text-2xl font-bold">MyBookstore</div>
           <div className="w-4"></div>
+          {loggedIn && user && (
+            <div className="text-white text-lg">Welcome, {user.email}</div>
+          )}
         </div>
       </nav>
       <div
@@ -64,20 +88,39 @@ function Navbar() {
           <FaTimes />
         </button>
         <div className="mt-20 flex flex-col items-center">
-          <Link
-            to="/view-books"
-            className="text-xl mb-4 flex items-center hover:underline text-white"
-            onClick={toggleNavbar}
-          >
-            <FaBook className="mr-2" /> Buy Books
-          </Link>
           <button
             type="button"
-            className="text-xl flex items-center hover:underline text-white"
-            onClick={handleLogout}
+            className="text-xl mb-4 flex items-center hover:underline text-white"
+            onClick={handleBuyBooks}
           >
-            <FaSignOutAlt className="mr-2" /> Logout
+            <FaBook className="mr-2" /> Buy Books
           </button>
+          {!user ? (
+            <>
+              <Link
+                to="/register"
+                className="text-xl mb-4 flex items-center hover:underline text-white"
+                onClick={toggleNavbar}
+              >
+                <FaUser className="mr-2" /> Sign Up
+              </Link>
+              <Link
+                to="/login"
+                className="text-xl mb-4 flex items-center hover:underline text-white"
+                onClick={toggleNavbar}
+              >
+                <FaSignOutAlt className="mr-2" /> Login
+              </Link>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="text-xl flex items-center hover:underline text-white"
+              onClick={handleLogout}
+            >
+              <FaSignOutAlt className="mr-2" /> Logout
+            </button>
+          )}
         </div>
       </div>
       {isProfileOpen && (
