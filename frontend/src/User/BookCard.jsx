@@ -42,7 +42,7 @@ const BookCard = ({ book, onAddToCart }) => {
       }
 
       const response = await axios.put(
-        `http://localhost:5000/buy-book/${book._id}`,
+        `https://ebookstore-server.onrender.com/buy-book/${book._id}`,
         {
           quantity: quantityToBuy,
           userEmail: userEmail,

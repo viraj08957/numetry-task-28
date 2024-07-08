@@ -7,14 +7,12 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [storageMessage, setStorageMessage] = useState("");
+
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    // Store email and password in local storage
     localStorage.setItem("email", email);
     localStorage.setItem("password", password);
-    setStorageMessage("Email and password have been stored in local storage.");
 
     if (
       email === "numetrytechnologies@gmail.com" &&
@@ -26,10 +24,13 @@ function Login() {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "https://ebookstore-server.onrender.com/login",
+        {
+          email,
+          password,
+        }
+      );
       const { message, loginIndex } = response.data;
       if (message.includes("user dashboard")) {
         localStorage.setItem("loginIndex", loginIndex);
@@ -82,9 +83,6 @@ function Login() {
           </span>
         </p>
         {message && <p className="mt-4 text-center text-red-500">{message}</p>}
-        {storageMessage && (
-          <p className="mt-4 text-center text-green-500">{storageMessage}</p>
-        )}
       </div>
     </div>
   );

@@ -22,7 +22,10 @@ const ContactForm = () => {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:5000/submit-contact", formData);
+      await axios.post(
+        "https://ebookstore-server.onrender.com/submit-contact",
+        formData
+      );
 
       setFormData({
         name: "",

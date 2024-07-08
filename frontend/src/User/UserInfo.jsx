@@ -4,7 +4,7 @@ import axios from "axios";
 
 const UserInfo = () => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Added loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -21,15 +21,15 @@ const UserInfo = () => {
         };
 
         const response = await axios.get(
-          "http://localhost:5000/current-user",
+          "https://ebookstore-server.onrender.com/current-user",
           config
         );
 
         setUser(response.data);
-        setLoading(false); // Set loading to false once data is fetched
+        setLoading(false); 
       } catch (error) {
         console.error("Error fetching user data:", error);
-        setLoading(false); // Set loading to false on error
+        setLoading(false);
       }
     };
 

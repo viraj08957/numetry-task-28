@@ -13,7 +13,9 @@ const BooksTable = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/books");
+        const response = await axios.get(
+          "https://ebookstore-server.onrender.com/books"
+        );
         setBooks(response.data);
       } catch (error) {
         console.error("Error fetching books:", error);
@@ -33,7 +35,9 @@ const BooksTable = () => {
 
   const handleDelete = async (bookId) => {
     try {
-      await axios.delete(`http://localhost:5000/delete-book/${bookId}`);
+      await axios.delete(
+        `https://ebookstore-server.onrender.com/delete-book/${bookId}`
+      );
       setBooks(books.filter((book) => book._id !== bookId));
     } catch (error) {
       console.error("Error deleting book:", error);

@@ -28,13 +28,16 @@ function Register() {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:5000/register", {
-        name,
-        phone,
-        email,
-        username,
-        password,
-      });
+      const response = await axios.post(
+        "https://ebookstore-server.onrender.com/register",
+        {
+          name,
+          phone,
+          email,
+          username,
+          password,
+        }
+      );
       setMessage(response.data.message);
       navigate("/login");
     } catch (error) {

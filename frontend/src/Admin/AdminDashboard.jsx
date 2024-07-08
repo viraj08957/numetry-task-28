@@ -14,7 +14,9 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchUserLogs = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/user-logs");
+        const response = await axios.get(
+          "https://ebookstore-server.onrender.com/user-logs"
+        );
         const groupedUsers = response.data.map((user) => {
           const groupedLogins = user.logins.reduce((acc, login) => {
             const dateKey = new Date(login.loginTime).toLocaleDateString();
@@ -58,7 +60,7 @@ function AdminDashboard() {
     const email = localStorage.getItem("email");
     const loginIndex = localStorage.getItem("loginIndex");
     try {
-      await axios.post("http://localhost:5000/logout", {
+      await axios.post("https://ebookstore-server.onrender.com/logout", {
         email,
         loginIndex,
       });
@@ -74,7 +76,9 @@ function AdminDashboard() {
 
   const handleRemove = async (userId) => {
     try {
-      await axios.delete(`http://localhost:5000/remove-user/${userId}`);
+      await axios.delete(
+        `https://ebookstore-server.onrender.com/remove-user/${userId}`
+      );
       const updatedUsers = users.map((user) => {
         if (user._id === userId) {
           user.groupedLogins.pop();

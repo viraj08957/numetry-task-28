@@ -24,14 +24,16 @@ const BookList = ({ addToCart, cartItems }) => {
   useEffect(() => {
     const totalPagesCount = Math.ceil(filteredBooks.length / booksPerPage);
     setTotalPages(totalPagesCount);
-    setCurrentPage(1); // Reset to first page when search results change
+    setCurrentPage(1);
   }, [filteredBooks]);
 
   const fetchBooks = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/books");
+      const response = await axios.get(
+        "https://ebookstore-server.onrender.com/books"
+      );
       setBooks(response.data);
-      setFilteredBooks(response.data); // Initialize filteredBooks with all books
+      setFilteredBooks(response.data);
     } catch (error) {
       console.error("Error fetching books:", error);
     }
@@ -39,13 +41,16 @@ const BookList = ({ addToCart, cartItems }) => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/search-books", {
-        params: {
-          title: searchTerm,
-          authorName: authorName,
-          publisherName: publisherName,
-        },
-      });
+      const response = await axios.get(
+        "https://ebookstore-server.onrender.com/search-books",
+        {
+          params: {
+            title: searchTerm,
+            authorName: authorName,
+            publisherName: publisherName,
+          },
+        }
+      );
 
       if (response.data.length === 0) {
         setShowNoResults(true);

@@ -14,7 +14,7 @@ const ContactMessages = () => {
   const fetchMessages = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/contact-messages"
+        "https://ebookstore-server.onrender.com/contact-messages"
       );
       setMessages(response.data);
     } catch (error) {

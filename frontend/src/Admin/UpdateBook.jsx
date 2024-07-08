@@ -23,7 +23,7 @@ const UpdateBook = () => {
     const fetchBookDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/books/${bookId}`
+          `https://ebookstore-server.onrender.com/books/${bookId}`
         );
         setBook({
           title: response.data.title,
@@ -52,12 +52,12 @@ const UpdateBook = () => {
     e.preventDefault();
     try {
       const response = await axios.put(
-        `http://localhost:5000/update-book/${bookId}`,
+        `https://ebookstore-server.onrender.com/update-book/${bookId}`,
         book
       );
       setMessage(response.data.message);
       setTimeout(() => {
-        navigate(`/view-book/${bookId}`); 
+        navigate(`/view-book/${bookId}`);
       }, 2000);
     } catch (error) {
       console.error("Error updating book:", error);
